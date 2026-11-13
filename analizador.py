@@ -1,25 +1,11 @@
-"""
-DevShield - Motor de análisis de ofertas laborales del sector TI.
 
-Este módulo contiene SOLO la lógica del análisis (sin Flask ni base de datos),
-de modo que sea modular, mantenible y fácil de probar (RFN-04).
-
-Qué hace, en orden:
-  1. Valida que el texto sea una oferta del sector TI (si no, la rechaza).
-  2. Detecta el nivel (junior / semi-senior / senior) y el cargo concreto.
-  3. Extrae el salario (cifras, rangos, "millones", SMMLV, USD) y lo compara
-     con la banda del cargo detectado, no con un promedio general.
-  4. Detecta señales de riesgo: experiencia oculta, funciones cruzadas,
-     contrato, sobrecarga horaria, trabajo no remunerado, posible fraude, etc.
-  5. Calcula el puntaje (0-100) y clasifica: Riesgo bajo / medio / alto.
-"""
 import os
 import re
 import unicodedata
 
-# ---------------------------------------------------------------------------
+
 # Parámetros (ajustables)
-# ---------------------------------------------------------------------------
+
 SMMLV_2026 = 1_750_905                       # Decreto 1469 de 2025
 TRM_USD_COP = float(os.getenv('DEVSHIELD_TRM_USD', '4000'))  # conversión aproximada
 BANDA_POR_DEFECTO = {'min': 2_000_000, 'max': 3_500_000}
@@ -67,9 +53,9 @@ class OfertaNoTIError(ValueError):
     """El texto no corresponde a una oferta del sector TI."""
 
 
-# ---------------------------------------------------------------------------
+
 # Utilidades de texto
-# ---------------------------------------------------------------------------
+
 def normalizar(texto: str) -> str:
     """Minúsculas, sin tildes y con variantes de escritura unificadas."""
     t = unicodedata.normalize('NFKD', texto)
@@ -101,9 +87,9 @@ def _a_float(s: str) -> float:
     return float(s.strip().replace(',', '.'))
 
 
-# ---------------------------------------------------------------------------
+
 # Catálogos
-# ---------------------------------------------------------------------------
+
 # Cargos TI (valen 2 puntos cada uno, distintos; si están en el título valen 2 más)
 ROLES_TI = [
     # desarrollo
@@ -486,9 +472,9 @@ RX_ANOS = re.compile(
     r'(anos?|years?|meses)\b')
 
 
-# ---------------------------------------------------------------------------
+
 # Bandas salariales
-# ---------------------------------------------------------------------------
+
 def promedio_bandas(roles):
     """Promedio general de las bandas (solo como último recurso)."""
     if not roles:
@@ -499,9 +485,9 @@ def promedio_bandas(roles):
     }
 
 
-# ---------------------------------------------------------------------------
+
 # Analizador
-# ---------------------------------------------------------------------------
+
 class AnalizadorDevShield:
     """
     texto : texto completo de la vacante.
@@ -1263,8 +1249,6 @@ class AnalizadorDevShield:
             self.estado_salario = 'ok'
             self.veredicto_salario = f'Dentro del rango de mercado{rol}.'
 
-    # ------------------------------------------------- 9. Combinaciones graves
-    # ------------------------------------- 9. Frases de alerta del administrador
     def analizar_patrones_admin(self):
         """Busca en el texto las frases de alerta que el administrador mantiene en la BD (RF-05)."""
         restante = PATRONES_ADMIN_TOPE
