@@ -1,8 +1,3 @@
-"""
-DevShield - Extracción de texto desde archivos cargados (sin Flask ni BD).
-
-Formatos: .txt / .md, .docx (solo biblioteca estándar) y .pdf (requiere `pypdf`).
-"""
 import html
 import io
 import re
