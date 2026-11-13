@@ -1,9 +1,3 @@
-"""
-DevShield - Migraciones mínimas de la base SQLite (sin Flask ni SQLAlchemy).
-
-`db.create_all()` crea tablas nuevas pero NO agrega columnas a tablas que ya existen; esto
-permite actualizar un devshield.db de una versión anterior sin perder datos.
-"""
 import os
 import sqlite3
 
