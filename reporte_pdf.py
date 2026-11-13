@@ -1,7 +1,3 @@
-"""
-DevShield - Generación del informe PDF de un análisis (sin Flask ni BD).
-Equivale al método AnalisisRiesgo.exportarPDF() del diagrama de clases. Requiere `reportlab`.
-"""
 import io
 from xml.sax.saxutils import escape
 
