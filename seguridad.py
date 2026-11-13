@@ -1,10 +1,3 @@
-"""
-DevShield - Utilidades de seguridad (sin dependencias de Flask ni de la BD).
-
-- LimitadorIntentos: bloquea temporalmente un acceso tras varios intentos de login fallidos
-  (flujo alternativo del caso de uso 5).
-- obtener_secret_key / obtener_password_admin: evitan dejar claves escritas en el código (RFN-03).
-"""
 import os
 import secrets
 import threading
