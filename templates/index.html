@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevShield — Análisis de Riesgo Laboral</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FBF9F4;
+            --card-bg: #FFFFFF;
+            --primary-color: #3B6B88;
+            --primary-hover: #2E546B;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --badge-admin-bg: #EFE4D2;
+            --badge-admin-text: #826645;
+            --risk-high-card: #FDF0E9;
+            --risk-high-circle: #D97D64;
+            --risk-high-text: #8F3B27;
+            --risk-med-card: #FEF9E7;
+            --risk-med-circle: #D69E2E;
+            --risk-med-text: #8D660D;
+            --risk-low-card: #F0FFF4;
+            --risk-low-circle: #38A169;
+            --risk-low-text: #22543D;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 48px; background-color: transparent; }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            background-color: #9C6844;
+            color: white;
+            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            border: 2px solid #855331;
+        }
+        .logo-text { font-size: 1.15rem; font-weight: 700; color: #2D3748; }
+        .admin-badge {
+            background-color: var(--badge-admin-bg);
+            color: var(--badge-admin-text);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-nav-top {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: #4A5568;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: all 0.2s;
+        }
+        .btn-nav-top:hover { background: #F7FAFC; }
+
+        .container { max-width: 860px; margin: 20px auto 40px; padding: 0 20px; width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); width: 100%; }
+
+        /* Auth Card */
+        .auth-card { max-width: 440px; padding: 36px 32px; text-align: center; }
+        .auth-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; text-align: left; }
+        .auth-sub { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; text-align: left; }
+        .auth-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .auth-tab { flex: 1; text-align: center; padding-bottom: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 600; color: #A0AEC0; border-bottom: 2px solid transparent; }
+        .auth-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #4A5568; }
+        .form-group input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; outline: none; }
+        .btn-action { background-color: var(--primary-color); color: white; border: none; padding: 11px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-action:hover { background-color: var(--primary-hover); }
+        .w-full { width: 100%; }
+
+        .alert-banner {
+            background-color: #F0FFF4;
+            border: 1px solid #C6F6D5;
+            color: #22543D;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            margin-bottom: 18px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-error {
+            background-color: #FFF5F5;
+            border-color: #FEB2B2;
+            color: #C53030;
+        }
+
+        /* Mockup 2: Ingreso de Vacante */
+        .analisis-container { text-align: center; max-width: 680px; }
+        .page-title { font-size: 1.45rem; font-weight: 700; margin-bottom: 8px; }
+        .page-sub { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+        .tags-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
+        .tag { padding: 4px 14px; border-radius: 14px; font-size: 0.72rem; font-weight: 600; }
+        .tag-salario { background: #E2ECF3; color: #366585; }
+        .tag-contrato { background: #F1E5D5; color: #8F693A; }
+        .tag-lenguaje { background: #F8E8C9; color: #9A7326; }
+        .textarea-box { width: 100%; height: 180px; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 0.9rem; resize: none; outline: none; background: #FFFFFF; margin-bottom: 20px; }
+
+        /* Mockup 3: Resultados */
+        .results-container { width: 100%; max-width: 780px; display: flex; flex-direction: column; gap: 16px; }
+        .banner-score { padding: 24px; border-radius: 12px; display: flex; align-items: center; gap: 24px; }
+        .score-circle { width: 72px; height: 72px; border-radius: 50%; border: 4px solid var(--risk-high-circle); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 700; background: #FFFFFF; flex-shrink: 0; }
+        .banner-text-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+        .banner-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+        .banner-desc { font-size: 0.85rem; color: #4A5568; }
+
+        .cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .card-inner { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; }
+        .card-inner h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 16px; }
+        
+        .flag-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .flag-icon { width: 22px; height: 22px; border-radius: 50%; background: #FDE8E4; color: #C53030; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; flex-shrink: 0; }
+        .flag-text strong { display: block; font-size: 0.85rem; color: #2D3748; }
+        .flag-text span { font-size: 0.78rem; color: #718096; }
+
+        .salary-track { height: 10px; background: #EBF4FA; border-radius: 6px; position: relative; margin: 18px 0 16px; }
+        .salary-bar-fill { position: absolute; height: 100%; background: #92B5CE; border-radius: 6px; }
+        .salary-needle { position: absolute; top: -5px; width: 4px; height: 20px; background: #8C5935; border-radius: 2px; transform: translateX(-50%); }
+        .salary-legends { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: #4A5568; margin-bottom: 12px; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .salary-verdict { font-size: 0.78rem; font-weight: 700; color: #C53030; }
+
+        .recommendation-card { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+        .rec-star-box { width: 26px; height: 26px; border-radius: 6px; background: #F4E8D5; color: #9C7844; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+        .rec-text h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .rec-text p { font-size: 0.8rem; color: #4A5568; line-height: 1.4; }
+
+        /* Mockup 4: Admin Panel */
+        .admin-box { width: 100%; max-width: 780px; }
+        .admin-header { margin-bottom: 20px; text-align: left; }
+        .admin-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
+        .admin-tab { padding-bottom: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #A0AEC0; border-bottom: 2px solid transparent; }
+        .admin-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .table-card { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 18px 24px; }
+        .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .admin-table th { background: #F6EFE5; color: #7B6856; font-size: 0.7rem; font-weight: 700; padding: 10px 14px; text-transform: uppercase; border: none; }
+        .admin-table th:first-child { border-radius: 6px 0 0 6px; }
+        .admin-table th:last-child { border-radius: 0 6px 6px 0; }
+        .admin-table td { padding: 12px 14px; font-size: 0.82rem; border-bottom: 1px solid #F1F4F8; color: #4A5568; }
+        .desglose-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .desglose-item { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; text-align: left; }
+        .desglose-item h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .desglose-pts { font-size: 0.8rem; color: #7B6856; margin-bottom: 8px; }
+        .desglose-bar { height: 6px; background: #EFE7DD; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+        .desglose-bar > div { height: 100%; background: var(--primary-color); border-radius: 4px; }
+        .desglose-item ul { list-style: none; font-size: 0.8rem; color: #4A5568; padding: 0; }
+        .desglose-item li { padding: 3px 0; }
+        @media (max-width: 640px) { .desglose-grid { grid-template-columns: 1fr; } }
+        .btn-secondary { background: #FFFFFF; color: var(--primary-color); border: 1px solid var(--primary-color); padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+        .btn-secondary:hover { background: #F4F8FB; }
+        .acciones-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; align-items: center; }
+        .file-hint { font-size: 0.78rem; color: #7B6856; margin-top: 10px; min-height: 1.1em; }
+        .badge-nivel { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .badge-alto { background: var(--risk-high-card); color: var(--risk-high-text); }
+        .badge-medio { background: var(--risk-med-card); color: var(--risk-med-text); }
+        .badge-bajo { background: var(--risk-low-card); color: var(--risk-low-text); }
+        .btn-add-dashed { border: 1px dashed #C8B7A6; background: transparent; padding: 6px 14px; border-radius: 16px; font-size: 0.78rem; color: #7B6856; cursor: pointer; margin-top: 14px; font-weight: 600; }
+        .btn-table-edit { background: none; border: none; color: var(--primary-color); font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <div class="logo-icon">&#x2B21;</div>
+            <span class="logo-text">DevShield</span>
+            <span id="badge-admin" class="admin-badge hidden">ADMIN</span>
+        </div>
+        <button id="btn-top-right" class="btn-nav-top">Panel administrador</button>
+    </header>
+
+    <main class="container">
+
+        <!-- VISTA 1: Autenticación Usuario Regular -->
+        <section id="view-auth" class="card-box auth-card">
+            <div id="auth-alert" class="alert-banner hidden">
+                <span id="auth-alert-icon">&#9989;</span>
+                <span id="auth-alert-text"></span>
+            </div>
+
+            <h2 id="auth-title" class="auth-title">Bienvenido de nuevo</h2>
+            <p id="auth-sub" class="auth-sub">Accede para analizar ofertas laborales</p>
+            
+            <div class="auth-tabs">
+                <div id="tab-login" class="auth-tab active">Iniciar sesión</div>
+                <div id="tab-register" class="auth-tab">Registrarme</div>
+            </div>
+
+            <form id="form-auth" autocomplete="off" onsubmit="return false;">
+                <div id="registro-campos" class="hidden">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="reg-nombre" placeholder="Harold" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido</label>
+                            <input type="text" id="reg-apellido" placeholder="Conejo" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="auth-email" placeholder="tucorreo@ejemplo.com" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="auth-pwd" placeholder="••••••••" autocomplete="new-password">
+                </div>
+
+                <button type="submit" id="btn-submit-auth" class="btn-action w-full">Iniciar sesión</button>
+            </form>
+        </section>
+
+        <!-- VISTA 1.5: Login Exclusivo de Administrador (Sin pestaña de registro) -->
+        <section id="view-admin-auth" class="card-box auth-card hidden">
+            <div id="admin-alert" class="alert-banner alert-error hidden">
+                <span>⚠️</span>
+                <span id="admin-alert-text"></span>
+            </div>
+
+            <h2 class="auth-title">Panel de Administración</h2>
+            <p class="auth-sub">Acceso restringido a personal autorizado</p>
+
+            <form id="form-admin-auth" autocomplete="off" onsubmit="return false;">
+                <div class="form-group">
+                    <label>Usuario administrador</label>
+                    <input type="text" id="admin-user" placeholder="Ingresar usuario" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="admin-pwd" placeholder="••••••••" autocomplete="new-password">
+                </div>
+
+                <button type="submit" id="btn-submit-admin" class="btn-action w-full" style="margin-bottom: 12px;">Ingresar al panel</button>
+                <button type="button" id="btn-volver-usuario" class="btn-nav-top w-full">Volver a inicio</button>
+            </form>
+        </section>
+
+        <!-- VISTA 2: Ingreso de Vacante -->
+        <section id="view-analisis" class="analisis-container hidden">
+            <h1 class="page-title">Analiza la seguridad de tu próxima vacante</h1>
+            <p class="page-sub">Pega el texto completo de la oferta y detecta salarios irreales, exigencias ocultas y riesgos contractuales.</p>
+            <div class="tags-row">
+                <span class="tag tag-salario">Salario</span>
+                <span class="tag tag-contrato">Contrato</span>
+                <span class="tag tag-lenguaje">Lenguaje</span>
+            </div>
+            <textarea id="texto-oferta" class="textarea-box" placeholder="Pega aquí el texto completo de la oferta laboral..."></textarea>
+            <div class="acciones-row">
+                <input type="file" id="input-archivo" accept=".txt,.md,.docx,.pdf" class="hidden">
+                <button id="btn-cargar-archivo" type="button" class="btn-secondary">Cargar archivo</button>
+                <button id="btn-analizar-oferta" class="btn-action">Analizar oferta</button>
+                <button id="btn-ver-historial" type="button" class="btn-secondary">Mi historial</button>
+            </div>
+            <div id="file-hint" class="file-hint">También puedes cargar la oferta desde un archivo .txt, .docx o .pdf (máx. 2 MB).</div>
+        </section>
+
+        <!-- VISTA 3: Resultados -->
+        <section id="view-resultados" class="results-container hidden">
+            <div id="banner-riesgo" class="banner-score">
+                <div id="score-circle" class="score-circle">0%</div>
+                <div>
+                    <div id="tag-riesgo" class="banner-text-tag">NIVEL DE RIESGO</div>
+                    <div id="titulo-riesgo" class="banner-title">Evaluando...</div>
+                    <div id="desc-riesgo" class="banner-desc">Analizando las condiciones de la oferta.</div>
+                </div>
+            </div>
+
+            <div class="cards-row">
+                <div class="card-inner">
+                    <h3>Banderas rojas detectadas</h3>
+                    <div id="lista-banderas"></div>
+                </div>
+                <div class="card-inner">
+                    <h3>Salario vs. mercado</h3>
+                    <div class="salary-track">
+                        <div id="bar-fill" class="salary-bar-fill" style="width: 50%;"></div>
+                        <div id="bar-marker" class="salary-needle" style="left: 30%;"></div>
+                    </div>
+                    <div class="salary-legends">
+                        <div><span class="legend-dot" style="background: #8C5935;"></span> Tu oferta: <strong id="val-oferta">$0 COP</strong></div>
+                        <div><span class="legend-dot" style="background: #92B5CE;"></span> Mercado <span id="lbl-mercado">junior</span>: <span id="val-mercado">$0 – $0 COP</span></div>
+                    </div>
+                    <div id="salario-veredicto" class="salary-verdict">En análisis...</div>
+                </div>
+            </div>
+
+            <div class="recommendation-card">
+                <div class="rec-star-box">&#9733;</div>
+                <div class="rec-text">
+                    <h4>Recomendación</h4>
+                    <p id="rec-cuerpo">Cargando...</p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button id="btn-desglose" type="button" class="btn-secondary">Ver desglose por criterio</button>
+            </div>
+            <div id="panel-desglose" class="desglose-grid hidden"></div>
+
+            <div class="acciones-row" style="margin-top: 10px;">
+                <button id="btn-otra-vacante" class="btn-action">Analizar otra vacante</button>
+                <button id="btn-descargar-pdf" type="button" class="btn-secondary hidden">Descargar PDF</button>
+                <button id="btn-resultados-historial" type="button" class="btn-secondary">Mi historial</button>
+            </div>
+        </section>
+
+        <!-- VISTA: Historial del candidato -->
+        <section id="view-historial" class="admin-box hidden">
+            <div class="admin-header">
+                <h1 class="page-title">Mi historial de análisis</h1>
+            </div>
+            <div class="table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cargo</th>
+                            <th>Nivel</th>
+                            <th>Puntaje</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historial"></tbody>
+                </table>
+                <p id="historial-vacio" class="file-hint hidden">Aún no has analizado ninguna vacante.</p>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button id="btn-historial-volver" class="btn-action">Analizar una vacante</button>
+            </div>
+        </section>
+
+        <!-- VISTA 4: Panel Administrador -->
+        <section id="view-admin" class="admin-box hidden">
+            <div class="admin-header">
+                <h1 class="page-title">Gestión de parámetros del sistema</h1>
+            </div>
+            <div class="admin-tabs">
+                <div id="admin-tab-rangos" class="admin-tab active">Rangos salariales</div>
+                <div id="admin-tab-palabras" class="admin-tab">Palabras clave</div>
+            </div>
+            <div id="panel-rangos" class="table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Rol TI</th>
+                            <th>Experiencia</th>
+                            <th>Salario Mínimo</th>
+                            <th>Salario Máximo</th>
+                            <th>Moneda</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-admin"></tbody>
+                </table>
+                <button id="btn-nuevo-rol" class="btn-add-dashed">+ Agregar rol</button>
+            </div>
+            <div id="panel-palabras" class="table-card hidden">
+                <p style="font-size: 0.8rem; color: #7B6856; margin: 0 0 12px;">
+                    Frases que el sistema busca en las ofertas como señales de alerta. El peso (1 a 25) indica cuántos puntos de riesgo suma cada una.
+                    Debe quedar al menos una frase activa.
+                </p>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Frase</th>
+                            <th>Categoría</th>
+                            <th>Peso</th>
+                            <th>Activa</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-palabras"></tbody>
+                </table>
+                <button id="btn-nueva-frase" class="btn-add-dashed">+ Agregar frase</button>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button id="btn-guardar-admin" class="btn-action">Guardar cambios</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let rolesData = [];
+        let patronesData = [];
+        let pestanaAdmin = 'rangos';
+        let analisisActualId = null;
+
+        const NOMBRE_EXPERIENCIA = { JUNIOR: 'Junior', MID: 'Semi-senior', SENIOR: 'Senior' };
+        const simboloMoneda = (m) => (m === 'USD' ? 'US$' : '$');
+
+        function esc(v) {
+            return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        let modoActual = 'login';
+
+        const views = {
+            auth: document.getElementById('view-auth'),
+            adminAuth: document.getElementById('view-admin-auth'),
+            analisis: document.getElementById('view-analisis'),
+            resultados: document.getElementById('view-resultados'),
+            historial: document.getElementById('view-historial'),
+            admin: document.getElementById('view-admin')
+        };
+
+        const btnTopRight = document.getElementById('btn-top-right');
+        const badgeAdmin = document.getElementById('badge-admin');
+
+        const inputEmail = document.getElementById('auth-email');
+        const inputPwd = document.getElementById('auth-pwd');
+        const inputNombre = document.getElementById('reg-nombre');
+        const inputApellido = document.getElementById('reg-apellido');
+
+        const inputAdminUser = document.getElementById('admin-user');
+        const inputAdminPwd = document.getElementById('admin-pwd');
+        const adminAlert = document.getElementById('admin-alert');
+        const adminAlertText = document.getElementById('admin-alert-text');
+
+        const authAlert = document.getElementById('auth-alert');
+        const authAlertIcon = document.getElementById('auth-alert-icon');
+        const authAlertText = document.getElementById('auth-alert-text');
+
+        function limpiarCampos() {
+            inputEmail.value = '';
+            inputPwd.value = '';
+            inputNombre.value = '';
+            inputApellido.value = '';
+            inputAdminUser.value = '';
+            inputAdminPwd.value = '';
+        }
+
+        function limpiarOferta() {
+            document.getElementById('texto-oferta').value = '';
+        }
+
+        // Cierra la sesión también en el servidor y deja la pantalla limpia
+        async function cerrarSesion() {
+            try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (e) {}
+            limpiarOferta();
+            setView('auth');
+        }
+
+        function setView(name) {
+            Object.values(views).forEach(v => v.classList.add('hidden'));
+            views[name].classList.remove('hidden');
+
+            limpiarCampos();
+
+            if (name === 'auth') {
+                btnTopRight.innerText = 'Panel administrador';
+                btnTopRight.onclick = () => setView('adminAuth');
+                badgeAdmin.classList.add('hidden');
+            } else if (name === 'adminAuth') {
+                btnTopRight.innerText = 'Volver al inicio';
+                btnTopRight.onclick = () => setView('auth');
+                badgeAdmin.classList.add('hidden');
+                adminAlert.classList.add('hidden');
+            } else if (name === 'analisis') {
+                limpiarOferta();
+                btnTopRight.innerText = 'Cerrar sesión';
+                btnTopRight.onclick = cerrarSesion;
+                badgeAdmin.classList.add('hidden');
+            } else if (name === 'resultados') {
+                btnTopRight.innerText = 'Analizar otra';
+                btnTopRight.onclick = () => {
+                    document.getElementById('texto-oferta').value = '';
+                    setView('analisis');
+                };
+                badgeAdmin.classList.add('hidden');
+            } else if (name === 'historial') {
+                btnTopRight.innerText = 'Cerrar sesión';
+                btnTopRight.onclick = cerrarSesion;
+                badgeAdmin.classList.add('hidden');
+                cargarHistorial();
+            } else if (name === 'admin') {
+                btnTopRight.innerText = 'Cerrar sesión';
+                btnTopRight.onclick = cerrarSesion;
+                badgeAdmin.classList.remove('hidden');
+                cambiarPestanaAdmin('rangos');
+                cargarRolesAdmin();
+                cargarPatronesAdmin();
+            }
+        }
+
+        // Pestañas de Login y Registro de Usuario Regular
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const btnSubmitAuth = document.getElementById('btn-submit-auth');
+        const registroCampos = document.getElementById('registro-campos');
+
+        function activarTabLogin() {
+            modoActual = 'login';
+            tabLogin.classList.add('active');
+            tabRegister.classList.remove('active');
+            registroCampos.classList.add('hidden');
+            document.getElementById('auth-title').innerText = 'Bienvenido de nuevo';
+            document.getElementById('auth-sub').innerText = 'Accede para analizar ofertas laborales';
+            btnSubmitAuth.innerText = 'Iniciar sesión';
+            limpiarCampos();
+        }
+
+        tabLogin.onclick = () => {
+            activarTabLogin();
+            authAlert.classList.add('hidden');
+        };
+
+        tabRegister.onclick = () => {
+            modoActual = 'registro';
+            tabRegister.classList.add('active');
+            tabLogin.classList.remove('active');
+            registroCampos.classList.remove('hidden');
+            document.getElementById('auth-title').innerText = 'Crea tu cuenta';
+            document.getElementById('auth-sub').innerText = 'Regístrate para validar ofertas y guardar tus análisis';
+            btnSubmitAuth.innerText = 'Registrarse';
+            limpiarCampos();
+            authAlert.classList.add('hidden');
+        };
+
+        btnSubmitAuth.onclick = async () => {
+            const correo = inputEmail.value.trim();
+            const password = inputPwd.value;
+
+            if (modoActual === 'login') {
+                if (!correo || !password) {
+                    mostrarAlertaAuth('Por favor ingresa correo y contraseña.', true);
+                    limpiarCampos();
+                    inputEmail.focus();
+                    return;
+                }
+
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    limpiarCampos();
+                    mostrarAlertaAuth(data.error || 'Credenciales inválidas.', true);
+                    inputEmail.focus();
+                    return;
+                }
+
+                limpiarCampos();
+                authAlert.classList.add('hidden');
+                setView('analisis');
+
+            } else {
+                const nombre = inputNombre.value.trim();
+                const apellido = inputApellido.value.trim();
+
+                if (!nombre || !apellido || !correo || !password) {
+                    mostrarAlertaAuth('Todos los campos son obligatorios.', true);
+                    limpiarCampos();
+                    inputNombre.focus();
+                    return;
+                }
+
+                const res = await fetch('/api/auth/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, correo, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    if (data.codigo === 'correo_registrado') {       // caso de uso 4: sugerir iniciar sesión
+                        activarTabLogin();
+                        inputEmail.value = correo;
+                        mostrarAlertaAuth(data.error, true);
+                        inputPwd.focus();
+                        return;
+                    }
+                    limpiarCampos();
+                    mostrarAlertaAuth(data.error || 'No fue posible registrar al usuario.', true);
+                    inputNombre.focus();
+                    return;
+                }
+
+                activarTabLogin();
+                mostrarAlertaAuth(data.mensaje, false);
+                inputEmail.focus();
+            }
+        };
+
+        function mostrarAlertaAuth(mensaje, esError) {
+            authAlertText.innerText = mensaje;
+            authAlert.className = esError ? 'alert-banner alert-error' : 'alert-banner';
+            authAlertIcon.innerText = esError ? '⚠️' : '✅';
+            authAlert.classList.remove('hidden');
+        }
+
+        // Login de Administrador (Harold, Karen, Andrea)
+        document.getElementById('btn-submit-admin').onclick = async () => {
+            const usuario = inputAdminUser.value.trim().toLowerCase();
+            const password = inputAdminPwd.value;
+
+            if (!usuario || !password) {
+                adminAlertText.innerText = 'Ingresa el usuario y la contraseña de administrador.';
+                adminAlert.classList.remove('hidden');
+                limpiarCampos();
+                inputAdminUser.focus();
+                return;
+            }
+
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, password })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                adminAlertText.innerText = data.error || 'Acceso denegado.';
+                adminAlert.classList.remove('hidden');
+                limpiarCampos();
+                inputAdminUser.focus();
+                return;
+            }
+
+            adminAlert.classList.add('hidden');
+            limpiarCampos();
+            setView('admin');
+        };
+
+        document.getElementById('btn-volver-usuario').onclick = () => {
+            setView('auth');
+        };
+
+        // Analizador de Vacantes
+        document.getElementById('btn-analizar-oferta').onclick = async () => {
+            const texto = document.getElementById('texto-oferta').value;
+            if (!texto.trim()) {
+                alert('Por favor pega el texto de una oferta laboral.');
+                return;
+            }
+
+            const res = await fetch('/api/analizar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ texto: texto })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                const caja = document.getElementById('texto-oferta');
+                if (res.status === 422) {
+                    caja.value = '';          // el texto no sirve: se limpia para pegar otra oferta
+                    alert((data.error || 'La oferta no es del sector TI.') + '\n\nPega otra oferta del sector TI para continuar.');
+                } else {
+                    alert(data.error || 'No fue posible analizar la oferta.');
+                }
+                caja.focus();
+                return;
+            }
+            renderResultados(data);
+            setView('resultados');
+        };
+
+        function renderResultados(data) {
+            analisisActualId = data.analisis_id || null;
+            const nombresExp = { JUNIOR: 'junior', MID: 'semi-senior', SENIOR: 'senior' };
+            document.getElementById('lbl-mercado').innerText = nombresExp[data.experiencia_mercado] || 'junior';
+            renderDesglose(data);
+            document.getElementById('btn-descargar-pdf').classList.toggle('hidden', !analisisActualId);
+            document.getElementById('score-circle').innerText = `${data.porcentaje}%`;
+            document.getElementById('titulo-riesgo').innerText = data.nivel;
+            document.getElementById('desc-riesgo').innerText = data.descripcion;
+            document.getElementById('rec-cuerpo').innerText = data.recomendacion;
+
+            const banner = document.getElementById('banner-riesgo');
+            const circle = document.getElementById('score-circle');
+
+            if (data.nivel === "Riesgo alto") {
+                banner.style.backgroundColor = "var(--risk-high-card)";
+                circle.style.borderColor = "var(--risk-high-circle)";
+                circle.style.color = "var(--risk-high-text)";
+            } else if (data.nivel === "Riesgo medio") {
+                banner.style.backgroundColor = "var(--risk-med-card)";
+                circle.style.borderColor = "var(--risk-med-circle)";
+                circle.style.color = "var(--risk-med-text)";
+            } else {
+                banner.style.backgroundColor = "var(--risk-low-card)";
+                circle.style.borderColor = "var(--risk-low-circle)";
+                circle.style.color = "var(--risk-low-text)";
+            }
+
+            const lista = document.getElementById('lista-banderas');
+            lista.innerHTML = "";
+            if (data.banderas.length === 0) {
+                lista.innerHTML = '<p style="font-size: 0.85rem; color: #4A5568;">✅ No se detectaron banderas rojas evidentes.</p>';
+            } else {
+                data.banderas.forEach(b => {
+                    const div = document.createElement('div');
+                    div.className = 'flag-item';
+                    div.innerHTML = `
+                        <div class="flag-icon">!</div>
+                        <div class="flag-text">
+                            <strong>${esc(b.titulo)}</strong>
+                            <span>${esc(b.detalle)}</span>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            }
+
+            const mMin = data.mercado.min;
+            const mMax = data.mercado.max;
+            document.getElementById('val-mercado').innerText = `$${mMin.toLocaleString('es-CO')} – $${mMax.toLocaleString('es-CO')} COP`;
+
+            const marker = document.getElementById('bar-marker');
+            const fill = document.getElementById('bar-fill');
+            const veredicto = document.getElementById('salario-veredicto');
+            const valOferta = document.getElementById('val-oferta');
+
+            // La barra representa de $0 a 1,5 veces el máximo de la banda; el tramo azul es la banda de mercado.
+            const escala = mMax * 1.5;
+            fill.style.left = `${(mMin / escala) * 100}%`;
+            fill.style.width = `${((mMax - mMin) / escala) * 100}%`;
+
+            if (data.salario) {
+                valOferta.innerText = data.salario_texto
+                    ? `${data.salario_texto} COP`
+                    : `$${data.salario.toLocaleString('es-CO')} COP`;
+                const pct = Math.min(98, Math.max(2, (data.salario / escala) * 100));
+                marker.style.left = `${pct}%`;
+                marker.classList.remove('hidden');
+            } else {
+                valOferta.innerText = 'No especificado';
+                marker.classList.add('hidden');
+            }
+
+            veredicto.innerText = data.salario_veredicto || 'No se detectó un salario numérico en la oferta.';
+            const colores = {
+                bajo: 'var(--risk-high-text)',
+                limite: 'var(--risk-med-text)',
+                alto: 'var(--risk-low-text)',
+                ok: 'var(--risk-low-text)'
+            };
+            veredicto.style.color = colores[data.salario_estado] || '#718096';
+        }
+
+        // ---- Desglose por criterio (caso de uso 3: "si el usuario solicita más detalle")
+        function renderDesglose(data) {
+            const panel = document.getElementById('panel-desglose');
+            const boton = document.getElementById('btn-desglose');
+            panel.classList.add('hidden');
+            boton.innerText = 'Ver desglose por criterio';
+            const desglose = data.desglose || { salario: 0, contrato: 0, lenguaje: 0 };
+            const total = Object.values(desglose).reduce((a, b) => a + b, 0) || 1;
+            const titulos = { salario: 'Salario', contrato: 'Contrato', lenguaje: 'Lenguaje' };
+            panel.innerHTML = ['salario', 'contrato', 'lenguaje'].map(cat => {
+                const flags = (data.banderas || []).filter(b => b.categoria === cat);
+                const pct = Math.round((desglose[cat] || 0) / total * 100);
+                return `
+                    <div class="desglose-item">
+                        <h4>${titulos[cat]}</h4>
+                        <div class="desglose-pts">${desglose[cat] || 0} puntos de riesgo</div>
+                        <div class="desglose-bar"><div style="width: ${pct}%"></div></div>
+                        <ul>${flags.length
+                            ? flags.map(b => `<li>• ${esc(b.titulo)}</li>`).join('')
+                            : '<li>Sin señales en este criterio</li>'}</ul>
+                    </div>`;
+            }).join('');
+        }
+        document.getElementById('btn-desglose').onclick = () => {
+            const panel = document.getElementById('panel-desglose');
+            const oculto = panel.classList.toggle('hidden');
+            document.getElementById('btn-desglose').innerText = oculto ? 'Ver desglose por criterio' : 'Ocultar desglose';
+        };
+
+        document.getElementById('btn-otra-vacante').onclick = () => {
+            document.getElementById('texto-oferta').value = '';
+            setView('analisis');
+        };
+
+        // ---- Cargar oferta desde archivo
+        document.getElementById('btn-cargar-archivo').onclick = () => document.getElementById('input-archivo').click();
+        document.getElementById('input-archivo').onchange = async (ev) => {
+            const input = ev.target;
+            const archivo = input.files[0];
+            const hint = document.getElementById('file-hint');
+            if (!archivo) return;
+            hint.style.color = '#7B6856';
+            hint.innerText = `Leyendo "${archivo.name}"...`;
+            const form = new FormData();
+            form.append('archivo', archivo);
+            try {
+                const res = await fetch('/api/extraer-texto', { method: 'POST', body: form });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'No fue posible leer el archivo.');
+                document.getElementById('texto-oferta').value = data.texto;
+                hint.innerText = `Archivo "${archivo.name}" cargado. Revisa el texto y presiona "Analizar oferta".`;
+            } catch (e) {
+                hint.style.color = 'var(--risk-high-text)';
+                hint.innerText = e.message;
+            }
+            input.value = '';          // permite volver a elegir el mismo archivo
+        };
+
+        // ---- PDF e historial
+        document.getElementById('btn-descargar-pdf').onclick = () => {
+            if (analisisActualId) window.location.href = `/api/historial/${analisisActualId}/pdf`;
+        };
+        document.getElementById('btn-ver-historial').onclick = () => setView('historial');
+        document.getElementById('btn-resultados-historial').onclick = () => setView('historial');
+        document.getElementById('btn-historial-volver').onclick = () => setView('analisis');
+
+        async function cargarHistorial() {
+            const tbody = document.getElementById('tbody-historial');
+            const vacio = document.getElementById('historial-vacio');
+            tbody.innerHTML = '';
+            const res = await fetch('/api/historial');
+            if (!res.ok) { vacio.innerText = 'No fue posible cargar tu historial.'; vacio.classList.remove('hidden'); return; }
+            const items = await res.json();
+            vacio.innerText = 'Aún no has analizado ninguna vacante.';
+            vacio.classList.toggle('hidden', items.length > 0);
+            const clase = { 'Riesgo alto': 'badge-alto', 'Riesgo medio': 'badge-medio', 'Riesgo bajo': 'badge-bajo' };
+            tbody.innerHTML = items.map(it => `
+                <tr>
+                    <td>${esc(it.fecha)}</td>
+                    <td>${esc(it.cargo || 'No identificado')}${it.empresa ? `<br><small>${esc(it.empresa)}</small>` : ''}</td>
+                    <td><span class="badge-nivel ${clase[it.nivel] || 'badge-bajo'}">${esc(it.nivel)}</span></td>
+                    <td>${esc(it.puntaje)}%</td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <button class="btn-table-edit" onclick="verAnalisis(${it.id})">Ver</button>
+                        <button class="btn-table-edit" onclick="descargarPdf(${it.id})">PDF</button>
+                        <button class="btn-table-edit" onclick="eliminarAnalisis(${it.id})">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.verAnalisis = async function(id) {
+            const res = await fetch(`/api/historial/${id}`);
+            if (!res.ok) { alert('No fue posible abrir el análisis.'); return; }
+            renderResultados(await res.json());
+            setView('resultados');
+        };
+        window.descargarPdf = function(id) { window.location.href = `/api/historial/${id}/pdf`; };
+        window.eliminarAnalisis = async function(id) {
+            if (!confirm('¿Eliminar este análisis de tu historial?')) return;
+            const res = await fetch(`/api/historial/${id}`, { method: 'DELETE' });
+            if (res.ok) cargarHistorial(); else alert('No fue posible eliminar el análisis.');
+        };
+
+        // Panel Admin
+        async function cargarRolesAdmin() {
+            const res = await fetch('/api/roles');
+            rolesData = await res.json();
+            renderTablaAdmin();
+        }
+
+        function renderTablaAdmin() {
+            const tbody = document.getElementById('tbody-admin');
+            tbody.innerHTML = rolesData.map((r, i) => `
+                <tr id="row-${i}">
+                    <td><strong>${esc(r.rol)}</strong></td>
+                    <td>${esc(NOMBRE_EXPERIENCIA[r.experiencia] || 'Junior')}</td>
+                    <td>${simboloMoneda(r.moneda)}${r.min.toLocaleString('es-CO')}</td>
+                    <td>${simboloMoneda(r.moneda)}${r.max.toLocaleString('es-CO')}</td>
+                    <td>${esc(r.moneda || 'COP')}</td>
+                    <td style="text-align: right;"><button class="btn-table-edit" onclick="editarFila(${i})">Editar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        window.editarFila = function(i) {
+            const r = rolesData[i];
+            const row = document.getElementById(`row-${i}`);
+            row.innerHTML = `
+                <td><input type="text" id="edit-rol-${i}" value="${esc(r.rol)}" style="width: 100%; padding: 4px;"></td>
+                <td>
+                    <select id="edit-exp-${i}" style="padding: 4px;">
+                        ${Object.entries(NOMBRE_EXPERIENCIA).map(([k, v]) => `<option value="${k}" ${(r.experiencia || 'JUNIOR') === k ? 'selected' : ''}>${v}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" id="edit-min-${i}" value="${r.min}" style="width: 100%; padding: 4px;"></td>
+                <td><input type="number" id="edit-max-${i}" value="${r.max}" style="width: 100%; padding: 4px;"></td>
+                <td>
+                    <select id="edit-mon-${i}" style="padding: 4px;">
+                        ${['COP', 'USD'].map(m => `<option value="${m}" ${(r.moneda || 'COP') === m ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                </td>
+                <td style="text-align: right;"><button class="btn-table-edit" onclick="guardarFilaTemp(${i})">Listo</button></td>
+            `;
+        };
+
+        window.guardarFilaTemp = function(i) {
+            rolesData[i] = {
+                rol: document.getElementById(`edit-rol-${i}`).value,
+                experiencia: document.getElementById(`edit-exp-${i}`).value,
+                moneda: document.getElementById(`edit-mon-${i}`).value,
+                min: parseInt(document.getElementById(`edit-min-${i}`).value) || rolesData[i].min,
+                max: parseInt(document.getElementById(`edit-max-${i}`).value) || rolesData[i].max
+            };
+            renderTablaAdmin();
+        };
+
+        document.getElementById('btn-nuevo-rol').onclick = () => {
+            rolesData.push({ rol: 'Nuevo rol TI', experiencia: 'JUNIOR', min: 2000000, max: 3500000, moneda: 'COP' });
+            renderTablaAdmin();
+        };
+
+        // ---- Pestañas del panel admin
+        function cambiarPestanaAdmin(nombre) {
+            pestanaAdmin = nombre;
+            document.getElementById('admin-tab-rangos').classList.toggle('active', nombre === 'rangos');
+            document.getElementById('admin-tab-palabras').classList.toggle('active', nombre === 'palabras');
+            document.getElementById('panel-rangos').classList.toggle('hidden', nombre !== 'rangos');
+            document.getElementById('panel-palabras').classList.toggle('hidden', nombre !== 'palabras');
+        }
+        document.getElementById('admin-tab-rangos').onclick = () => cambiarPestanaAdmin('rangos');
+        document.getElementById('admin-tab-palabras').onclick = () => cambiarPestanaAdmin('palabras');
+
+        // ---- Palabras clave (frases de alerta)
+        async function cargarPatronesAdmin() {
+            const res = await fetch('/api/patrones');
+            if (!res.ok) { patronesData = []; renderTablaPatrones(); return; }
+            patronesData = await res.json();
+            renderTablaPatrones();
+        }
+
+        function renderTablaPatrones() {
+            const tbody = document.getElementById('tbody-palabras');
+            const cats = ['lenguaje', 'contrato', 'salario'];
+            tbody.innerHTML = patronesData.map((p, i) => `
+                <tr>
+                    <td><input type="text" value="${esc(p.frase)}" maxlength="150" style="width: 100%; padding: 4px;" oninput="patronesData[${i}].frase = this.value"></td>
+                    <td>
+                        <select style="padding: 4px;" onchange="patronesData[${i}].categoria = this.value">
+                            ${cats.map(c => `<option value="${c}" ${p.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" min="1" max="25" value="${esc(p.peso)}" style="width: 70px; padding: 4px;" oninput="patronesData[${i}].peso = parseInt(this.value) || 0"></td>
+                    <td><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="patronesData[${i}].activo = this.checked"></td>
+                    <td style="text-align: right;"><button class="btn-table-edit" onclick="quitarFrase(${i})">Quitar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        window.quitarFrase = function(i) {
+            patronesData.splice(i, 1);
+            renderTablaPatrones();
+        };
+
+        document.getElementById('btn-nueva-frase').onclick = () => {
+            patronesData.push({ frase: '', categoria: 'lenguaje', peso: 5, activo: true });
+            renderTablaPatrones();
+        };
+
+        // ---- Guardar (según la pestaña activa)
+        document.getElementById('btn-guardar-admin').onclick = async () => {
+            const esRangos = pestanaAdmin === 'rangos';
+            const res = await fetch(esRangos ? '/api/roles' : '/api/patrones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(esRangos ? rolesData : patronesData)
+            });
+            if (res.ok) {
+                alert(esRangos ? 'Rangos salariales guardados exitosamente en la base de datos.'
+                               : 'Palabras clave guardadas exitosamente en la base de datos.');
+                if (!esRangos) cargarPatronesAdmin();
+            } else {
+                let msg = 'Error al guardar. Verifica tu sesión de administrador.';
+                try { msg = (await res.json()).error || msg; } catch (e) {}
+                alert(msg);
+            }
+        };
+
+        setView('auth');
+    </script>
+</body>
+</html>
